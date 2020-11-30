@@ -34,7 +34,7 @@ def read_tgmm(xml_path, labels=None):
     :return: pd.DataFrame, containing individual cells per row and corresponding information as mentioned above.
     """
     names = ['cell id TGMM', 'parent id TGMM', 'split score', 'nu', 'beta', 'alpha', 'x', 'y', 'z',
-             'precision matrix', 'frame']
+             'precision matrix']
     tree = ET.parse(xml_path)
     root = tree.getroot()
     l = []
