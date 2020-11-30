@@ -56,7 +56,7 @@ def read_tgmm(xml_path, labels=None):
         l.append([id, parent_id, split_score, nu, beta, alpha, x, y, z, p_mtrx])
     out = pd.DataFrame(l, columns=names)
     if labels is not None:
-        for key, val in labels:
+        for key, val in labels.items():
             out[key] = val
     return out
 
