@@ -7,8 +7,7 @@ import glob
 import os
 
 
-def read_tgmm(xml_path, disable_status=False):
-    # TODO: change function to only read a single xml // make it more flexible
+def read_tgmm(xml_path, labels=None):
     """
     Read single cell segmentation results from TGMM (McDole et al., Cell, 2018) and return as pandas DataFrame.
 
@@ -30,36 +29,36 @@ def read_tgmm(xml_path, disable_status=False):
         fitting the nucleus. Encodes nuclear shape (eigenvectors = main axes, 1/eigenvalues ~ length of main axes).
     * frame: number of the time frame
 
-    :param xml_path: str, path to folder containing the TGMM .xml files.
-    :param disable_status: bool, show status bar labeled 'Reading XMLs'.
+    :param xml_path: str, path to a TGMM generated .xml file
+    :param labels: dict, key=column name, val=value of the column (can be single or list)
     :return: pd.DataFrame, containing individual cells per row and corresponding information as mentioned above.
     """
-    xmls = glob.glob(os.path.join(xml_path, '*.xml'))
     names = ['cell id TGMM', 'parent id TGMM', 'split score', 'nu', 'beta', 'alpha', 'x', 'y', 'z',
              'precision matrix', 'frame']
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
     l = []
-    for i in tqdm.trange(len(xmls), desc='Reading XMLs', disable=disable_status):
-        path = xmls[i]
-        tree = ET.parse(path)
-        root = tree.getroot()
-        for cell in root.iter('GaussianMixtureModel'):
-            try:
-                id = int(cell.attrib['id'])
-                parent_id = int(cell.attrib['parent'])
-                split_score = float(cell.attrib['splitScore'])
-                nu = float(cell.attrib['nu'])
-                beta = float(cell.attrib['beta'])
-                alpha = float(cell.attrib['alpha'])
-                xyz = np.array(cell.attrib['m'].split(' ')[0:3], dtype=np.float)
-                x, y, z = tuple(xyz)
-                p_mtrx = np.array(cell.attrib['W'].split(' ')[0:-1], dtype=np.float).reshape((3, 3))
-                if np.any(p_mtrx == np.inf):
-                    continue
-            except ValueError:
+    for cell in root.iter('GaussianMixtureModel'):
+        try:
+            id = int(cell.attrib['id'])
+            parent_id = int(cell.attrib['parent'])
+            split_score = float(cell.attrib['splitScore'])
+            nu = float(cell.attrib['nu'])
+            beta = float(cell.attrib['beta'])
+            alpha = float(cell.attrib['alpha'])
+            xyz = np.array(cell.attrib['m'].split(' ')[0:3], dtype=np.float)
+            x, y, z = tuple(xyz)
+            p_mtrx = np.array(cell.attrib['W'].split(' ')[0:-1], dtype=np.float).reshape((3, 3))
+            if np.any(p_mtrx == np.inf):
                 continue
-            frame = i
-            l.append([id, parent_id, split_score, nu, beta, alpha, x, y, z, p_mtrx, frame])
-    return pd.DataFrame(l, columns=names)
+        except ValueError:
+            continue
+        l.append([id, parent_id, split_score, nu, beta, alpha, x, y, z, p_mtrx])
+    out = pd.DataFrame(l, columns=names)
+    if labels is not None:
+        for key, val in labels:
+            out[key] = val
+    return out
 
 def read_MaMuT(xml_path, disable_status=False):
     """
