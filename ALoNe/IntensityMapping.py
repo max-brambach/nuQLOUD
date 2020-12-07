@@ -7,6 +7,7 @@ import raster_geometry as rg
 # TODO: use ellipse from nuclear shape to integrate fluorescence
 # TODO: comment functions
 # TODO: differentiate nucleus / cytosol / membrane tags
+# TODO: add function to __scale__ the intensities // iterate over single samples
 
 def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
     coords = np.round(coords).astype(np.int)

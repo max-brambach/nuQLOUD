@@ -63,7 +63,7 @@ def neigbour_density_gradient_estimation(coords, density, n_neighbours=6):
         out.append(features)
     return np.array(out)
 
-def nuclear_density(df, disable_status=False):
+def nuclear_density(df):
     """
     Calculate the kernel and nearest neighbour based density estimates in 3D.
 
@@ -73,20 +73,13 @@ def nuclear_density(df, disable_status=False):
     density nde' added.
     kde = kernel density estimation, nde = neighbour density estimation
     :param df: pandas dataframe
-    :param disable_status: bool, set to True to disable the progress bar
     :return: pandas dataframe
     """
-    n_frames = df['frame'].max()
-    kde_list = []
-    nde_list = []
-    for i in tqdm.trange(n_frames + 1, desc='Calculating nuclear densities', disable=disable_status):
-        coords = df.loc[df['frame'] == i][['x', 'y', 'z']].to_numpy()
-        kde = list(kernel_density_estimation(coords))
-        nde = list(neighbour_density_estimation(coords))
-        kde_list += kde
-        nde_list += nde
-    df['nuclear density kde'] = kde_list
-    df['nuclear density nde'] = nde_list
+    coords = df[['x', 'y', 'z']].to_numpy()
+    kde = list(kernel_density_estimation(coords))
+    nde = list(neighbour_density_estimation(coords))
+    df['nuclear density kde'] = kde
+    df['nuclear density nde'] = nde
     return df
 
 def nuclear_density_gradient(df):
