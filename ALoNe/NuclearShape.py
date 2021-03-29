@@ -7,9 +7,7 @@ from scipy.optimize import minimize
 from scipy.stats import multivariate_normal
 from sklearn.mixture import GaussianMixture
 import matplotlib.pyplot as plt
-sys.path.append(r'C:\Users\MaxB\PycharmProjects\TissueAssemblyPipeline\scripts')
 
-from tissue_assembly_pipeline.CellShape import eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity, cart2spher, normalise_anlges_to_pi
 
 # TODO: _old_ make a function that extracts the region around a nucleus from an image. this couls be done by next neighbour/2 distance
 # TODO: _old_ fit ellipsoid on data: http://www.juddzone.com/ALGORITHMS/least_squares_3D_ellipsoid.html, https://vtkplotter.embl.es/_modules/vtkplotter/analysis.html pca ellipsoid
