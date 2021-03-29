@@ -131,7 +131,7 @@ def nuclear_shape(df, disable_status=False):
 
 
 def voronoi_features(df):
-    df['boundary bool'] = (df['type'] == 'outside') * 1
+    df['boundary bool'] = (df['point type'] == 'outside') * 1
     df = get_n_neighbours(df)
     df = voronoi_density(df)
     df = neighbourhood_feature_average(df, 'voronoi volume')
