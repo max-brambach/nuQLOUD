@@ -26,7 +26,7 @@ import openTSNE as ot
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 
-def find_cluster_number_gmm(X, n_comp=[2, 10], n_init=5):
+def n_cluster_gmm(X, n_comp=[2, 10], n_init=5):
     s_score = []
     js_distance = []
     bic_score = []
