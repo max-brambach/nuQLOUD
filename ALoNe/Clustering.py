@@ -80,6 +80,10 @@ def tsne_sequential_embedding(df,
                               full_exaggeration=4,
                               full_early_runs=500,
                               full_runs=500):
+    if len(df.index) <= n:
+        n = len(df.index)//2
+        Warning('Data contains less samples than were supposed to be used for subsampling.\n'+
+                'Using {}, which is half of the data-size.'.format(n))
     initial_df = df.sample(n=n).copy()
     remaining_df = df.loc[~df.index.isin(initial_df.index)].copy()
 
