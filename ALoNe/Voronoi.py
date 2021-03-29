@@ -188,7 +188,7 @@ def find_boundary_cells(df):
 
 
 def voronoi_restricted(df):
-    voro1 = get_voronoi(df['cell id'], df[list('xyz')])
+    voro1 = get_voronoi(df['cell id'], df[list('xyz')].values)
     df = pd.merge(df, voro1, on='cell id')
     df['boundary bool'] = (df['neighbour boundaries'] > 0) * 1
     p_arr = adaptive_radial_restriction_3d(df)
