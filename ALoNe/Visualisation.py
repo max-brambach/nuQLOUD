@@ -69,17 +69,17 @@ def show_orientation(df, frame):
     pass
 
 
-def show_features(df, features, export=None):
+def show_features(df, features, cmap='hot', r=5):
     actors = []
     for f in features:
         pnts = []
-        pnts = vedo.Points(df[['x', 'y', 'z']].to_numpy(), r=5)
+        pnts = vedo.Points(df[['x', 'y', 'z']].to_numpy(), r=r)
         pnts.addPointArray(df[f].to_numpy(), f)
         pnts.addScalarBar(title=f)
-        pnts.pointColors(cmap='hot',
+        pnts.pointColors(cmap=cmap,
                          )
         actors.append(pnts)
-        return actors
+    return actors
 
 
 def show_nuclear_fit(df, cid):
