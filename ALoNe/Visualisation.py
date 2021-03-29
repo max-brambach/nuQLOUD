@@ -1,5 +1,6 @@
 import vedo
 import vtk
+import numpy as np
 
 
 def show_voro(df, c='gold', alpha=1):
