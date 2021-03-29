@@ -4,6 +4,7 @@ import os
 import tqdm
 from scipy.stats import gaussian_kde
 from scipy.spatial import KDTree
+from sklearn.preprocessing import StandardScaler
 from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
 
 
@@ -203,3 +204,12 @@ def neighbourhood_feature_average(df, feature_name):
     df['neighbourhood {} std'.format(feature_name)] = np.array(std)
     return df
 
+def scale_features(df, features):
+    scaler = StandardScaler()
+    X = df[features].to_numpy()
+    X_scaled = scaler.fit_transform(X)
+    f_scaled = []
+    for f in features:
+        f_scaled.append(f + ' scaled')
+    df_scaled = pd.DataFrame(X_scaled, columns=f_scaled)
+    return df.merge(df_scaled, left_index=True, right_index=True), f_scaled
