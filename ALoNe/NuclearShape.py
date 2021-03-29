@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import vtkplotter as vtp
 import tqdm
 import sys
 from scipy.spatial import KDTree
