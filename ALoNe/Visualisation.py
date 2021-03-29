@@ -74,16 +74,14 @@ def show_features(df, frame, features, export=None):
     df = df.loc[df['frame'] == frame]
     for f in features:
         pnts = []
-        pnts = vtp.Points(df[['x', 'y', 'z']].to_numpy(), r=5)
-        vals = df[f].to_numpy() / df[f].max()
-        pnts.addPointArray(vals, f)
+        pnts = vedo.Points(df[['x', 'y', 'z']].to_numpy(), r=5)
+        pnts.addPointArray(df[f].to_numpy(), f)
         pnts.addScalarBar(title=f)
         pnts.pointColors(cmap='hot',
                          )
         actors.append(pnts)
-    vtp.show(actors, N=len(actors))
-    if export is not None:
-        vtp.exportWindow(export)
+        return actors
+
 
 def show_nuclear_fit(df, cid):
     pass
