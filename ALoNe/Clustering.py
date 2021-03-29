@@ -26,11 +26,11 @@ import openTSNE as ot
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 
-def n_cluster_gmm(X, n_comp=[2, 10], n_init=5):
+def n_comp_gmm(X, n_comp=[2, 10], n_init=5):
     s_score = []
     js_distance = []
     bic_score = []
-    for i in tqdm.trange(n_comp[0], n_comp[1]):
+    for i in tqdm.trange(n_comp[0], n_comp[1], desc='number of components for gmm'):
         gmm = GaussianMixture(
             n_components=i,
             covariance_type='full',
@@ -66,7 +66,96 @@ def gmm_js(gmm_p, gmm_q, n_samples=20000):
             + log_q_Y.mean() - (log_mix_Y.mean() - np.log(2))) / 2
 
 
+def tsne_sequential_embedding(df,
+                              features,
+                              n=25000,
+                              name='tsne',
+                              initial_perplexities=[50, 500],
+                              initial_early_exaggeration=12,
+                              initial_exaggeration=1,
+                              initial_early_runs=250,
+                              initial_runs=750,
+                              full_perplexity=30,
+                              full_early_exaggeratio=12,
+                              full_exaggeration=4,
+                              full_early_runs=500,
+                              full_runs=500):
+    initial_df = df.sample(n=n).copy()
+    remaining_df = df.loc[~df.index.isin(initial_df.index)].copy()
 
+    # Initial embedding
+    affinities_initial = ot.affinity.Multiscale(
+        initial_df[features].to_numpy(),
+        perplexities=initial_perplexities,
+        metric='cosine',
+        n_jobs=-1,
+        verbose=1,
+    )
+    init_initial = ot.initialization.pca(
+        initial_df[features].to_numpy(),
+    )
+    initial_embedding = ot.TSNEEmbedding(
+        init_initial,
+        affinities_initial,
+        negative_gradient_method="fft",
+        n_jobs=-1,
+    )
+    initial_embedding = initial_embedding.optimize(
+        n_iter=initial_early_runs,
+        exaggeration=initial_early_exaggeration,
+        momentum=0.5,
+        verbose=1,
+    )
+    initial_embedding = initial_embedding.optimize(
+        n_iter=initial_runs,
+        exaggeration=initial_exaggeration,
+        momentum=0.8,
+        verbose=1,
+    )
+    initial_df['{} 1'.format(name)] = initial_embedding[:, 0]
+    initial_df['{} 2'.format(name)] = initial_embedding[:, 1]
+
+    # Registration of the remaining data
+    remaining_embedding = initial_embedding.prepare_partial(
+        remaining_df[features].to_numpy(),
+        k=1,
+    )
+    remaining_df['{} 1'.format(name)] = remaining_embedding[:, 0]
+    remaining_df['{} 2'.format(name)] = remaining_embedding[:, 1]
+
+    # Optimisation of the combined data
+    full_df = pd.concat([initial_df, remaining_df])
+    affinities = ot.affinity.PerplexityBasedNN(
+        full_df[features].to_numpy(),
+        perplexity=full_perplexity,
+        n_jobs=-1,
+        random_state=0,
+        verbose=1,
+        metric='cosine',
+    )
+    full_embedding = ot.TSNEEmbedding(
+        full_df[['tsne 1', 'tsne 2']].to_numpy(),
+        affinities,
+        learning_rate=len(full_df.index),
+        negative_gradient_method="fft",
+        n_jobs=-1,
+        verbose=1,
+    )
+    full_embedding.optimize(
+        n_iter=full_early_runs,
+        exaggeration=full_early_exaggeratio,
+        momentum=0.5,
+        inplace=True,
+    )
+    full_embedding.optimize(
+        n_iter=full_runs,
+        exaggeration=full_exaggeration,
+        momentum=0.8,
+        inplace=True,
+    )
+    full_df['{} 1'.format(name)] = full_embedding[:, 0]
+    full_df['{} 2'.format(name)] = full_embedding[:, 1]
+    return full_df
 
 
 
