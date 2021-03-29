@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.mixture import GaussianMixture
 from scipy import stats
 from sklearn.manifold import TSNE
 import sklearn.cluster as cls
@@ -13,6 +14,7 @@ import scipy
 import seaborn as sns
 import matplotlib.pyplot as plt
 import tqdm
+import openTSNE as ot
 
 # TODO: comment all clustering functions
 # TODO: remove unnecessary clustering functions
@@ -20,6 +22,63 @@ import tqdm
 # TODO: replace sklearn tsne by opentsne
 # TODO: add function to register a dataset to a reference
 # TODO: add function to calculate the distance of a point from the cluster center
+
+from sklearn.metrics import silhouette_score
+from sklearn.model_selection import train_test_split
+
+def find_cluster_number_gmm(X, n_comp=[2, 10], n_init=5):
+    s_score = []
+    js_distance = []
+    bic_score = []
+    for i in tqdm.trange(n_comp[0], n_comp[1]):
+        gmm = GaussianMixture(
+            n_components=i,
+            covariance_type='full',
+            n_init=n_init,
+        ).fit(X)
+        bic_score.append(gmm.bic(X))
+        labels = gmm.predict(X)
+        s_score.append(silhouette_score(X, labels))
+        X_p, X_q = train_test_split(X, test_size=.5)
+        gmm_p = GaussianMixture(
+            n_components=i,
+            covariance_type='full',
+            n_init=n_init,
+        ).fit(X_p)
+        gmm_q = GaussianMixture(
+            n_components=i,
+            covariance_type='full',
+            n_init=n_init,
+        ).fit(X_q)
+        js_distance.append(gmm_js(gmm_p, gmm_q, n_samples=X_p.shape[0]//2))
+    return s_score, js_distance, bic_score
+
+def gmm_js(gmm_p, gmm_q, n_samples=20000):
+    X = gmm_p.sample(n_samples)[0]
+    log_p_X = gmm_p.score_samples(X)
+    log_q_X = gmm_q.score_samples(X)
+    log_mix_X = np.logaddexp(log_p_X, log_q_X)
+    Y = gmm_q.sample(n_samples)[0]
+    log_p_Y = gmm_p.score_samples(Y)
+    log_q_Y = gmm_q.score_samples(Y)
+    log_mix_Y = np.logaddexp(log_p_Y, log_q_Y)
+    return (log_p_X.mean() - (log_mix_X.mean() - np.log(2))
+            + log_q_Y.mean() - (log_mix_Y.mean() - np.log(2))) / 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -45,27 +104,7 @@ def linkage_matrix(model):
                                       counts]).astype(float)
     return linkage_matrix
 
-# TOOO: Test the clustering fuctions -- none of them is tested so far 2020-08-06
 
-# def save_data(df,
-#               name,
-#               features):
-#     coords = df[['x', 'y', 'z']].to_numpy()
-#     np.save(name + '_coords', coords)
-#     X = df[features].to_numpy()
-#     np.save(name + '_data.npy', X)
-#     return
-
-
-def scale_data(X,
-               mode='min_max'):
-    if mode == 'min_max':
-        scaler = MinMaxScaler()
-    elif mode == 'std':
-        scaler = StandardScaler()
-    else:
-        raise KeyError('Specified mode not supported.\nTry min_max or std.')
-    return scaler.fit_transform(X)
 
 def tsne(df,
          features,
