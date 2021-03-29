@@ -69,9 +69,8 @@ def show_orientation(df, frame):
     pass
 
 
-def show_features(df, frame, features, export=None):
+def show_features(df, features, export=None):
     actors = []
-    df = df.loc[df['frame'] == frame]
     for f in features:
         pnts = []
         pnts = vedo.Points(df[['x', 'y', 'z']].to_numpy(), r=5)
