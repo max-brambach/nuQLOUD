@@ -67,7 +67,7 @@ def nuclear_density(df):
     coords = df[['x', 'y', 'z']].to_numpy()
     kde = list(kernel_density_estimation(coords))
     nde = list(neighbour_density_estimation(coords))
-    df['nuclear density kde'] = kde
+    df['nuclear density kde'] = kde  * df['x'].max() * df['y'].max() * df['z'].max()
     df['nuclear density nde'] = nde
     return df
 
