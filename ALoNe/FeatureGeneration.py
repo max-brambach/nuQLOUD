@@ -178,32 +178,28 @@ def voronoi_density(df):
     return df
 
 
-def neighbourhood_feature_average(df, feature_name, measures=('mean', 'std')):
+def neighbourhood_feature_average(df, feature_name):
     voro_neighbours = df['neigbour cell ids'].to_list()
     idx = df['cell id'].to_dict()
     idx_rev = {v: k for k, v in idx.items()}
     feature = df[feature_name].to_numpy()
-
-    for m in measures:
-        out = []
-        for i in tqdm.trange(feature.shape[0], desc='neighbourhood {} {}'.format(feature_name, m)):
-            f = [feature[i]]
-            for v in voro_neighbours[i]:
-                if v == 0 or v not in df['cell id'].values:
-                    continue  # neighbour index 0 indicates a boundary and is hence skipped
-                f1 = feature[idx_rev[v]]
-                f.append(f1)
-            f = np.array(f)
-            if len(f) == 0:
-                out.append(np.nan)
-                continue
-            if m == 'mean':
-                out.append(np.mean(f))
-            elif m == 'std':
-                out.append(np.std(f))
-            elif m == 'max':
-                out.append(np.max(f))
-            else:
-                raise ValueError('Unknown value in measures "{}". Used one of [mean, std, max].')
-        df['neighbourhood {} {}'.format(feature_name, m)] = np.array(out)
+    mean = []
+    std = []
+    for i in tqdm.trange(feature.shape[0], desc='neighbourhood {}'.format(feature_name)):
+        f = [feature[i]]
+        for v in voro_neighbours[i]:
+            if v == 0 or v not in df['cell id'].values:
+                continue  # neighbour index 0 indicates a boundary and is hence skipped
+            f1 = feature[idx_rev[v]]
+            f.append(f1)
+        f = np.array(f)
+        if len(f) == 0:
+            mean.append(np.nan)
+            std.append(np.nan)
+            continue
+        mean.append(np.mean(f))
+        std.append(np.std(f))
+    df['neighbourhood {} mean'.format(feature_name)] = np.array(mean)
+    df['neighbourhood {} std'.format(feature_name)] = np.array(std)
     return df
+
