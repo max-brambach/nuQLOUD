@@ -117,7 +117,7 @@ def make_fibonacci_lattice(number):
     return coords.astype(float)
 
 
-def adaptive_radial_restriction_3d(df, k=10):
+def adaptive_radial_restriction_3d(df, k=10, flat=False, flat_scale=.66):
     """
     Generate a set of points that will adaptively restrict a voronoi diagram relative to the local arrangement of the
     seed points.
@@ -147,13 +147,18 @@ def adaptive_radial_restriction_3d(df, k=10):
             df_neigh = df.loc[df['cell id'].isin(nid)]
             bound = df_neigh['boundary bool'].values.astype(bool)
             if bound.all():
-                k_plus = 0
-                while bound.all():
-                    kdtree_neighbours = tree.query(df.loc[df['cell id'] == cid, list('xyz')].values[0],
-                                                   k=k + k_plus)[1][1:]
-                    df_neigh = df.iloc[kdtree_neighbours]
-                    bound = df_neigh['boundary bool'].values.astype(bool)
-                    k_plus += 5
+                if not flat:
+                    k_plus = 0
+                    while bound.all():
+                        kdtree_neighbours = tree.query(df.loc[df['cell id'] == cid, list('xyz')].values[0],
+                                                       k=k + k_plus)[1][1:]
+                        df_neigh = df.iloc[kdtree_neighbours]
+                        bound = df_neigh['boundary bool'].values.astype(bool)
+                        k_plus += 5
+                else:
+                    coords_neigh = df_neigh[list('xyz')].values
+                    coords_seed = df.loc[df['cell id'] == cid, list('xyz')].values
+                    avg_dist = np.mean(np.linalg.norm(coords_neigh - coords_seed, axis=1)) * flat_scale
             V = df_neigh['voronoi volume'].values
             n_vert = df_neigh['vertex number'].values
             V = V[~bound].mean()
@@ -206,6 +211,7 @@ def voronoi_restricted(df):
     df_full = pd.merge(df_full, voro_full, on='cell id')
     df_full = find_boundary_cells(df_full)
     df_full = df_full.loc[df_full['restriction point bool'] != True]
+    df_full.drop(['boundary bool', 'restriction point bool'], axis=1, inplace=True)
     return df_full
 
 
