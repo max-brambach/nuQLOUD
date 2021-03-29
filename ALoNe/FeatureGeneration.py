@@ -4,6 +4,7 @@ import os
 import tqdm
 from scipy.stats import gaussian_kde
 from scipy.spatial import KDTree
+from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
 
 
 def kernel_density_estimation(p_source, p_target=None):
@@ -68,6 +69,64 @@ def nuclear_density(df):
     nde = list(neighbour_density_estimation(coords))
     df['nuclear density kde'] = kde
     df['nuclear density nde'] = nde
+    return df
+
+
+def nuclear_shape(df, disable_status=False):
+    """
+    Compute nuclear shape features from precision matrices.
+
+    Convenience function.
+    Takes a dataframe as input which has to have the following column:
+    * 'precision matrix': inverse of the covariance matrix of a multivariate gaussian distribution that was fit to the individual nuclei.
+
+    The input dataframe is returned with the columns added:
+    * 'nucleus main vectors cartesian', 'nucleus main vectors spherical': np.arrays containing the major, median and minor vectors (as columns)
+    * 'nucleus major axis r', 'nucleus major axis theta', 'nucleus major axis phi': major vector in spherical coordinates
+    * 'nucleus eccentricity':
+    * 'nucleus aspect ratio':
+    * 'nucleus sphericity':
+    * 'nucleus volume':
+    * 'nucleus surface':
+    :param df: pd.Dataframe
+    :param disable_status: if True no statusbar is displayed
+    :return: pd.Dataframe
+    """
+    p_matrices = df['precision matrix'].to_numpy()
+    c_list = []
+    s_list = []
+    r_list = []
+    theta_list = []
+    phi_list = []
+    e_list = []
+    ar_list = []
+    vol_list = []
+    surf_list = []
+    spher_list = []
+    for i in tqdm.trange(len(p_matrices), desc='Calculating nuclear shape', disable=disable_status):
+        p_matrix = np.array(p_matrices[i])
+        cart_vec, spher_vec = get_main_vectors(p_matrix)
+        ecc = eccentricity(spher_vec[0, :])
+        c_list.append(cart_vec)
+        s_list.append(spher_vec)
+        r_list.append(spher_vec[0, 0])
+        theta_list.append(spher_vec[1, 0])
+        phi_list.append(spher_vec[2, 0])
+        e_list.append(ecc)
+        ar_list.append(aspect_ratio(spher_vec[0, :]))
+        vol_list.append(ellipsoid_volume(spher_vec[0, :]))
+        surf_list.append(ellipsoid_surface(spher_vec[0, :]))
+        spher_list.append(sphericity(vol_list[-1], surf_list[-1]))
+    df['nucleus main vectors cartesian'] = c_list
+    df['nucleus main vectors spherical'] = s_list
+    df['nucleus major axis r'] = r_list
+    df['nucleus major axis theta'] = theta_list
+    df['nucleus major axis phi'] = phi_list
+    df['nucleus eccentricity'] = e_list
+    df['nucleus aspect ratio'] = ar_list
+    df['nucleus volume'] = vol_list
+    df['nucleus surface'] = surf_list
+    df['nucleus sphericity'] = spher_list
     return df
 
 

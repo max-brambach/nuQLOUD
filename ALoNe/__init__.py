@@ -1,5 +1,5 @@
 import ALoNe.CellDensity
-import ALoNe.CellShape
+import ALoNe.Shape
 import ALoNe.Clustering
 import ALoNe.ImageIO
 import ALoNe.IntensityMapping

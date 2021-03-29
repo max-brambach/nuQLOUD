@@ -1,12 +1,6 @@
 import numpy as np
 import pandas as pd
 import tqdm
-from scipy.ndimage import map_coordinates
-# from tissue_assembly_pipeline.ImageIO import universal_image_reader
-from scipy import signal
-
-# TODO: refactor module name; cell shape is not what we're getting
-
 
 
 def normalise_anlges_to_pi(a):
