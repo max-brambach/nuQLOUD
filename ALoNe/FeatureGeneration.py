@@ -139,6 +139,7 @@ def voronoi_features(df):
     df = neighbourhood_feature_average(df, 'n neighbours')
     df = neighbourhood_feature_average(df, 'boundary bool')
     df = neighbourhood_feature_average(df, 'centroid offset')
+    return df
 
 
 
@@ -146,7 +147,7 @@ def get_n_neighbours(df):
     cids = list(df['cell id'].values)
     n_cids = df['neigbour cell ids'].values
     n_neigh = []
-    for i in tqdm.trange(len(n_cids)):
+    for i in tqdm.trange(len(n_cids), desc='number of neighbours'):
         n_neigh.append([cids[i], len(list(set(cids).intersection(n_cids[i])))])
     n_df = pd.DataFrame(np.array(n_neigh), columns=['cell id', 'n neighbours'])
     df = df.merge(n_df, on='cell id')
@@ -160,7 +161,7 @@ def voronoi_density(df):
     coords = df[list('xyz')].to_numpy()
     out_mean = []
     out_std = []
-    for i in tqdm.trange(coords.shape[0]):
+    for i in tqdm.trange(coords.shape[0], desc='voronoi density'):
         c0 = coords[i, :]
         delta_c = []
         for v in voro_neighbours[i]:
