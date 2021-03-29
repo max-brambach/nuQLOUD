@@ -130,3 +130,79 @@ def nuclear_shape(df, disable_status=False):
     return df
 
 
+def voronoi_features(df):
+    df['boundary bool'] = (df['type'] == 'outside') * 1
+    df = get_n_neighbours(df)
+    df = voronoi_density(df)
+    df = neighbourhood_feature_average(df, 'voronoi volume')
+    df = neighbourhood_feature_average(df, 'voronoi sphericity')
+    df = neighbourhood_feature_average(df, 'n neighbours')
+    df = neighbourhood_feature_average(df, 'boundary bool')
+    df = neighbourhood_feature_average(df, 'centroid offset')
+
+
+
+def get_n_neighbours(df):
+    cids = list(df['cell id'].values)
+    n_cids = df['neigbour cell ids'].values
+    n_neigh = []
+    for i in tqdm.trange(len(n_cids)):
+        n_neigh.append([cids[i], len(list(set(cids).intersection(n_cids[i])))])
+    n_df = pd.DataFrame(np.array(n_neigh), columns=['cell id', 'n neighbours'])
+    df = df.merge(n_df, on='cell id')
+    return df
+
+
+def voronoi_density(df):
+    voro_neighbours = df['neigbour cell ids'].to_list()
+    idx = df['cell id'].to_dict()
+    idx_rev = {v: k for k, v in idx.items()}
+    coords = df[list('xyz')].to_numpy()
+    out_mean = []
+    out_std = []
+    for i in tqdm.trange(coords.shape[0]):
+        c0 = coords[i, :]
+        delta_c = []
+        for v in voro_neighbours[i]:
+            if v == 0 or v not in df['cell id'].values:
+                continue  # neighbour index 0 indicates a boundary and is hence skipped
+            c1 = coords[idx_rev[v]]
+            delta_c.append(np.linalg.norm(
+                c0 - c1))  # THIS COULD BE FURTHER USED AS VECTOR-VALUED FEATURE (without the norm, obviously)
+        delta_c = 1 / np.array(delta_c)
+        out_mean.append(np.mean(delta_c))
+        out_std.append(np.std(delta_c))
+    df['density voronoi mean'] = np.array(out_mean)
+    df['density voronoi std'] = np.array(out_std)
+    return df
+
+
+def neighbourhood_feature_average(df, feature_name, measures=('mean', 'std')):
+    voro_neighbours = df['neigbour cell ids'].to_list()
+    idx = df['cell id'].to_dict()
+    idx_rev = {v: k for k, v in idx.items()}
+    feature = df[feature_name].to_numpy()
+
+    for m in measures:
+        out = []
+        for i in tqdm.trange(feature.shape[0], desc='neighbourhood {} {}'.format(feature_name, m)):
+            f = [feature[i]]
+            for v in voro_neighbours[i]:
+                if v == 0 or v not in df['cell id'].values:
+                    continue  # neighbour index 0 indicates a boundary and is hence skipped
+                f1 = feature[idx_rev[v]]
+                f.append(f1)
+            f = np.array(f)
+            if len(f) == 0:
+                out.append(np.nan)
+                continue
+            if m == 'mean':
+                out.append(np.mean(f))
+            elif m == 'std':
+                out.append(np.std(f))
+            elif m == 'max':
+                out.append(np.max(f))
+            else:
+                raise ValueError('Unknown value in measures "{}". Used one of [mean, std, max].')
+        df['neighbourhood {} {}'.format(feature_name, m)] = np.array(out)
+    return df
