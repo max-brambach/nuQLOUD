@@ -1,39 +1,48 @@
-import vtkplotter as vtp
-import numpy as np
-import pandas as pd
-import tqdm
-import seaborn as sns
-
-# TODO: clean up and comment
-# TODO: make cmap flexible
-# TODO: remove frame arguments
-# TODO: remove unnecessary functions (i.e. tracking stuff)
+import vedo
+import vtk
 
 
-def show_tracks(df, track_ids=None, disable_statusbar=False):
-    if track_ids is None:
-        track_ids = np.arange(df['track id'].max())
-    plot_list = []
-    pbar = tqdm.tqdm(total=len(plot_list), desc='Building track objects', disable=disable_statusbar)
-    for tid in track_ids:
-        s_list = []
-        d_list = []
-        track = df.loc[df['track id'] == tid]
-        for i, node in track.iterrows():
-            if node['parent id'] == -1:
-                continue
-            source_coords = track.loc[track['cell id'] == node['parent id']][['x', 'y', 'z']].to_numpy().squeeze()
-            destination_coords = node[['x', 'y', 'z']].to_numpy()
-            s_list.append(source_coords)
-            d_list.append(destination_coords)
-        if len(s_list) == 0 or len(d_list) == 0:
-            continue
-        # print('s_list: ', s_list)
-        # print('d_list: ', d_list)
-        track_plot_object = vtp.Lines(s_list, d_list, c=i)
-        plot_list.append(track_plot_object)
-        pbar.update(1)
-    vtp.show(plot_list, bg='k')
+def plot_voro(df, c='gold', alpha=1):
+    sourcePoints = vtk.vtkPoints()
+    sourcePolygons = vtk.vtkCellArray()
+    cells, areas, volumes = [], [], []
+    for i in df['cell id']:  # each line corresponds to an input point
+        sdf = df.loc[df['cell id'] == i].copy()
+        # print(sdf)
+        area = sdf['voronoi surface area']
+        volu = sdf['voronoi volume']
+        n = sdf['vertex number']
+        c_vert_relative = np.array(sdf['coordinates vertices'].values[0])
+        c_nucleus = sdf[list('xyz')].to_numpy()
+        c_vert = c_vert_relative + c_nucleus
+        ids = []
+        for i in range(c_vert.shape[0]):
+            p = c_vert[i, :]
+            aid = sourcePoints.InsertNextPoint(p[0], p[1], p[2])
+            ids.append(aid)
+        vert_per_face = sdf['vertices per face'].values[0]
+
+        faces = []
+        for j in range(len(vert_per_face)):
+            face = vert_per_face[j]
+
+            ele = vtk.vtkPolygon()
+            ele.GetPointIds().SetNumberOfIds(len(face))
+            elems = []
+            for k, f in enumerate(face):
+                ele.GetPointIds().SetId(k, ids[f])
+                elems.append(ids[f])
+            sourcePolygons.InsertNextCell(ele)
+            faces.append(elems)
+        cells.append(faces)
+        areas.append(area)
+        volumes.append(volu)
+    poly = vtk.vtkPolyData()
+    poly.SetPoints(sourcePoints)
+    poly.SetPolys(sourcePolygons)
+    voro = vedo.Mesh(poly, c=c, alpha=alpha)
+    return voro
+
 
 
 def show_clusters(df, labels, mode, export=None, bg='w'):

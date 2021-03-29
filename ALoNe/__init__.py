@@ -10,3 +10,4 @@ import ALoNe.Rays
 import ALoNe.SegmentationIO
 import ALoNe.Visualisation
 import ALoNe.Voronoi
+import ALoNe.FeatureGeneration
