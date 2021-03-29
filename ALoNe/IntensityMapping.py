@@ -38,17 +38,12 @@ def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
         print('Skipped {} cells, because their nuclear position was outside the image volume.'.format(count_error))
     return intens_mean, intens_std
 
-def intensity(df, image, name, mode='nucleus', disable_statusbar=False):
-    frames = df['frame'].unique()
-    cids = []
-    means = []
-    stds = []
-    for i in frames:
-        coords = df[['x', 'y', 'z']].loc[df['frame'] == i].to_numpy()
-        mean, std = get_intensity_sphere(image, coords, 2, name=name)
-        cids += df['cell id'].loc[df['frame'] == i].tolist()
-        means += list(mean)
-        stds += list(std)
+def intensity(df, image, name):
+    coords = df[['x', 'y', 'z']].to_numpy()
+    mean, std = get_intensity_sphere(image, coords, 2, name=name)
+    cids = df['cell id'].tolist()
+    means = list(mean)
+    stds = list(std)
     df.loc[cids, 'intensity mean ' + name] = means
     df.loc[cids, 'intensity std ' + name] = stds
     return df

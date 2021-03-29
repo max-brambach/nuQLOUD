@@ -123,6 +123,7 @@ def tsne_sequential_embedding(df,
     remaining_embedding = initial_embedding.prepare_partial(
         remaining_df[features].to_numpy(),
         k=1,
+        perplexity=1/3,
     )
     remaining_df['{} 1'.format(name)] = remaining_embedding[:, 0]
     remaining_df['{} 2'.format(name)] = remaining_embedding[:, 1]
