@@ -2,7 +2,7 @@ import vedo
 import vtk
 
 
-def plot_voro(df, c='gold', alpha=1):
+def show_voro(df, c='gold', alpha=1):
     sourcePoints = vtk.vtkPoints()
     sourcePolygons = vtk.vtkCellArray()
     cells, areas, volumes = [], [], []

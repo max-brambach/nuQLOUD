@@ -141,7 +141,9 @@ def adaptive_radial_restriction_3d(df, k=10, flat=False, flat_scale=.66):
     cids = df['cell id'].values
     df_idx = df.index
     dict_cid_idx = dict(zip(cids, df_idx))
+    pbar = tqdm.tqdm(total=len(df_bound['cell id'].index))
     for cid in df_bound['cell id']:
+        pbar.update(1)
         try:
             nid = np.array(df.loc[df['cell id'] == cid]['neigbour cell ids'])[0]
             df_neigh = df.loc[df['cell id'].isin(nid)]
