@@ -1,7 +1,7 @@
 import vedo
 import vtk
 import numpy as np
-
+import seaborn as sns
 
 def show_voro(df, c='gold', alpha=1):
     sourcePoints = vtk.vtkPoints()
@@ -43,6 +43,19 @@ def show_voro(df, c='gold', alpha=1):
     poly.SetPolys(sourcePolygons)
     voro = vedo.Mesh(poly, c=c, alpha=alpha)
     return voro
+
+
+def show_categorical_features(df, label, palette='bright'):
+    labels = df[label].unique()
+    p = vedo.Points(df[list('xyz')].to_numpy(), c='black', alpha=.5, r=1)
+    ps = [p]
+    colors = sns.palettes.color_palette(palette, n_colors=len(labels))
+    for i, l in enumerate(labels):
+        coords = df.loc[df[label] == l, list('xyz')].to_numpy()
+        p = vedo.Points(coords, c=colors[i], alpha=1, r=3)
+        ps.append(p)
+
+    return ps
 
 
 

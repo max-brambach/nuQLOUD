@@ -32,19 +32,24 @@ def plot_histograms(df, quantities):
         sns.distplot(df[quant],ax=ax)
     plt.show()
 
-def plot_tsne(df, labels=None, show=True):
-    palette = sns.color_palette(n_colors=df[labels].max() + 1)
-    tsne_plot = sns.scatterplot(data=df,
-                                x='tsne 1',
-                                y='tsne 2',
-                                hue=labels,
-                                palette=palette,
-                                legend=None,
-                                s=10)
-    if show:
-        plt.show()
-    else:
-        return tsne_plot
+def plot_tsne(df,
+              tsne_labels=['tsne 1', 'tsne 2'],
+              hue='cluster labels',
+              figsize=[10,10],
+              s=10,
+              palette='bright',
+              linewidth=0,
+             ):
+    plt.figure(figsize=figsize)
+    sns.scatterplot(data=df,
+                   x=tsne_labels[0],
+                   y=tsne_labels[1],
+                   hue=hue,
+                   palette=palette,
+                   legend=None,
+                   s=s,
+                   linewidth=linewidth)
+    return plt.gca()
 
 def plot_cluster_number_estimation(cn):
     sns.set(font_scale=1.5, style='whitegrid')
