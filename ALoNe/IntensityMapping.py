@@ -10,7 +10,7 @@ import raster_geometry as rg
 # TODO: add function to __scale__ the intensities // iterate over single samples
 
 def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
-    coords = np.round(coords).astype(np.int)
+    coords = np.round(coords).astype(int)
     count_error = 0
     if isinstance(radii, int):
         radii = [radii] * coords.shape[0]
@@ -19,8 +19,6 @@ def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
     for i in tqdm.trange(coords.shape[0], desc='Mapping {} intensities'.format(name), disable=disable_statusbar):
         x, y, z = coords[i, :]
         r = int(radii[i])
-        # print(x-r, type(x-r))
-        # print(r, type(r))
         try:
             sphere = rg.sphere(2*r, r)
             cube = image[x-r:x+r, y-r:y+r, z-r:z+r]
@@ -41,7 +39,7 @@ def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
 def intensity(df, image, name):
     coords = df[['x', 'y', 'z']].to_numpy()
     mean, std = get_intensity_sphere(image, coords, 2, name=name)
-    cids = df['cell id'].tolist()
+    cids = df.index.tolist()
     means = list(mean)
     stds = list(std)
     df.loc[cids, 'intensity mean ' + name] = means
