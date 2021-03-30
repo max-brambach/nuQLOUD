@@ -24,6 +24,8 @@ def read_multiple_tgmm(path):
         sdf['sample'] = name
         dfs.append(sdf)
     df = pd.concat(dfs)
+    df.reset_index(drop=True, inplace=True)
+    df['cell id'] = df.index + 1
     return df
 
 
