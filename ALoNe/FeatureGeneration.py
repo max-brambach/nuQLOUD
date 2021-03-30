@@ -1,11 +1,32 @@
 import numpy as np
 import pandas as pd
-import os
 import tqdm
 from scipy.stats import gaussian_kde
 from scipy.spatial import KDTree
 from sklearn.preprocessing import StandardScaler
 from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
+import ALoNe
+
+
+def all_features(df):
+    """
+    Generate all features from a dataframe.
+
+    Convenience function.
+    Batch calculate nuclear density, the restricted voronoi diagram and the corresponding voronoi features for a df
+    containing 'x', 'y', 'z' coordinates and 'cell id's (<1).
+    :param df: pd.DataFrame
+    :return: pd.DataFrame
+    """
+    dfs = []
+    for sid in df['sample'].unique():
+        sdf = df.loc[df['sample'] == sid].copy()
+        sdf = ALoNe.FeatureGeneration.nuclear_density(sdf)
+        sdf = ALoNe.Voronoi.voronoi_restricted(sdf)
+        sdf = ALoNe.FeatureGeneration.voronoi_features(sdf)
+        dfs.append(sdf)
+    df = pd.concat(dfs)
+    return df
 
 
 def kernel_density_estimation(p_source, p_target=None):
@@ -132,7 +153,7 @@ def nuclear_shape(df, disable_status=False):
 
 
 def voronoi_features(df):
-    df['boundary bool'] = (df['point type'] == 'outside') * 1
+    df['boundary bool'] = (df['point type'] == 'boundary') * 1
     df = get_n_neighbours(df)
     df = voronoi_density(df)
     df = neighbourhood_feature_average(df, 'voronoi volume')
