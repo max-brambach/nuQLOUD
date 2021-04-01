@@ -26,7 +26,17 @@ import openTSNE as ot
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 
-def n_comp_gmm(X, n_comp=[2, 10], n_init=5):
+def n_comp_gmm(X, n_comp=(2, 10), n_init=5):
+    """
+    Evaluate the performance of a Gaussian Mixture Model using different metrics.
+
+    Used metrics are the Silhouette Score, the Jensen-Shannon divergence of the split sample population and the
+    Bayesian Information Criterion.
+    :param X: np.array, shape=[n_observations, n_features], data in sklearn norm
+    :param n_comp: list, number of components for the gmm that are tested (n_min, n_max)
+    :param n_init: int, number of independent initialisations of the gmm.
+    :return: [silhouette_score, js_divergence, bic], each a list with one element per tested number of components.
+    """
     s_score = []
     js_distance = []
     bic_score = []
@@ -54,6 +64,13 @@ def n_comp_gmm(X, n_comp=[2, 10], n_init=5):
     return s_score, js_distance, bic_score
 
 def gmm_js(gmm_p, gmm_q, n_samples=20000):
+    """
+    Jensen-Shannon divergence of two Gaussian Mixture Models.
+    :param gmm_p: sklearn.mixture.GaussianMixture object
+    :param gmm_q: sklearn.mixture.GaussianMixture object
+    :param n_samples: int, subsampling number
+    :return: float, js-divergence of the two gmms
+    """
     X = gmm_p.sample(n_samples)[0]
     log_p_X = gmm_p.score_samples(X)
     log_q_X = gmm_q.score_samples(X)
@@ -76,10 +93,31 @@ def tsne_sequential_embedding(df,
                               initial_early_runs=250,
                               initial_runs=750,
                               full_perplexity=30,
-                              full_early_exaggeratio=12,
+                              full_early_exaggeration=12,
                               full_exaggeration=4,
                               full_early_runs=500,
                               full_runs=500):
+    """
+    Sequential t-sne following the protocol of Kobak & Berens 2019 (https://doi.org/10.1038/s41467-019-13056-x).
+
+    Uses PCA initialisation, subsampling of n=25,000 samples for initial embedding, registration of remaining data and
+    final (full) embedding optimisation. The initial embedding uses mulitple perplexities.
+    :param df: pd.DataFrame, contains features in columns, observations in rows
+    :param features: list, names of the columns in df that contain the features
+    :param n:
+    :param name:
+    :param initial_perplexities:
+    :param initial_early_exaggeration:
+    :param initial_exaggeration:
+    :param initial_early_runs:
+    :param initial_runs:
+    :param full_perplexity:
+    :param full_early_exaggeratio:
+    :param full_exaggeration:
+    :param full_early_runs:
+    :param full_runs:
+    :return:
+    """
     if len(df.index) <= n:
         n = len(df.index)//2
         Warning('Data contains less samples than were supposed to be used for subsampling.\n'+
@@ -148,7 +186,7 @@ def tsne_sequential_embedding(df,
     )
     full_embedding.optimize(
         n_iter=full_early_runs,
-        exaggeration=full_early_exaggeratio,
+        exaggeration=full_early_exaggeration,
         momentum=0.5,
         inplace=True,
     )

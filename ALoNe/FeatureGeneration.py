@@ -8,6 +8,16 @@ from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_
 import ALoNe
 
 
+def clean_up_columns(df):
+    """
+    Remove columns from df that are not used anymore.
+    """
+    drop_rows = ['cell id TGMM', 'parent id TGMM', 'split score', 'nu', 'beta', 'alpha',
+                 'precision matrix', 'vertex number',
+                 'edge number', 'edge distance', 'face number', 'voronoi surface area']
+    df = df.drop(drop_rows, errors='ignore')
+    return df
+
 def all_features(df):
     """
     Generate all features from a dataframe.
