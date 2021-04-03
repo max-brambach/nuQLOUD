@@ -48,7 +48,7 @@ def get_voronoi(ids, coords, boundaries=None):
     with open('temp_coords_for_voronoi.txt.vol', "r") as f:
         lines = f.readlines()
     rows = []
-    for i in tqdm.trange(len(lines), desc='Voronoi cell creation'):
+    for i in tqdm.trange(len(lines), desc='Voronoi cell creation', position=0, leave=True):
         line = lines[i]
         l = line.strip().split(' ')
         cid = int(l[0])
@@ -141,7 +141,7 @@ def adaptive_radial_restriction_3d(df, k=10, flat=False, flat_scale=.66):
     cids = df['cell id'].values
     df_idx = df.index
     dict_cid_idx = dict(zip(cids, df_idx))
-    pbar = tqdm.tqdm(total=len(df_bound['cell id'].index), desc='Adaptive radial restriction')
+    pbar = tqdm.tqdm(total=len(df_bound['cell id'].index), desc='Adaptive radial restriction', position=0, leave=True)
     for cid in df_bound['cell id']:
         pbar.update(1)
         try:

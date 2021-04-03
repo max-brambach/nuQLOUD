@@ -15,7 +15,7 @@ def clean_up_columns(df):
     drop_rows = ['cell id TGMM', 'parent id TGMM', 'split score', 'nu', 'beta', 'alpha',
                  'precision matrix', 'vertex number',
                  'edge number', 'edge distance', 'face number', 'voronoi surface area']
-    df = df.drop(drop_rows, errors='ignore')
+    df = df.drop(drop_rows, errors='ignore', axis=1)
     return df
 
 def all_features(df):
@@ -193,7 +193,7 @@ def voronoi_density(df):
     coords = df[list('xyz')].to_numpy()
     out_mean = []
     out_std = []
-    for i in tqdm.trange(coords.shape[0], desc='voronoi density'):
+    for i in tqdm.trange(coords.shape[0], desc='voronoi density', position=0, leave=True):
         c0 = coords[i, :]
         delta_c = []
         for v in voro_neighbours[i]:
@@ -217,7 +217,7 @@ def neighbourhood_feature_average(df, feature_name):
     feature = df[feature_name].to_numpy()
     mean = []
     std = []
-    for i in tqdm.trange(feature.shape[0], desc='neighbourhood {}'.format(feature_name)):
+    for i in tqdm.trange(feature.shape[0], desc='neighbourhood {}'.format(feature_name), position=0, leave=True):
         f = [feature[i]]
         for v in voro_neighbours[i]:
             if v == 0 or v not in df['cell id'].values:
