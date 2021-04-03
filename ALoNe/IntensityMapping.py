@@ -13,19 +13,19 @@ def intensity_mapping_gmm(df, images, names):
     cids = df['cell id'].unique()
 
     for i in tqdm.trange(len(cids), position=0, leave=True, desc='intensity mapping {}'.format(names)):
-        try:
-            cell_id = cids[i]
-            temp = [cell_id]
-            verts = np.array(df.loc[df['cell id'] == cell_id, 'coordinates vertices'].values[0])
-            faces = np.array(df.loc[df['cell id'] == cell_id, 'vertices per face'].values[0], dtype=object)
-            coords = np.array(df.loc[df['cell id'] == cell_id, list('xyz')].values[0])
-            mesh = vedo.Mesh([verts, faces])
-            vol = vedo.volume.mesh2Volume(mesh)
-            ar = copy.deepcopy(vol.getDataArray() // 255).astype(bool)
-            box_bounds = np.array(list(verts.min(axis=0) + coords - 1) + list(verts.max(axis=0) + coords))
-            box_bounds = box_bounds.astype(int)
+        cell_id = cids[i]
+        temp = [cell_id]
+        verts = np.array(df.loc[df['cell id'] == cell_id, 'coordinates vertices'].values[0])
+        faces = np.array(df.loc[df['cell id'] == cell_id, 'vertices per face'].values[0], dtype=object)
+        coords = np.array(df.loc[df['cell id'] == cell_id, list('xyz')].values[0])
+        mesh = vedo.Mesh([verts, faces])
+        vol = vedo.volume.mesh2Volume(mesh)
+        ar = copy.deepcopy(vol.getDataArray() // 255).astype(bool)
+        box_bounds = np.array(list(verts.min(axis=0) + coords - 1) + list(verts.max(axis=0) + coords))
+        box_bounds = box_bounds.astype(int)
 
-            for img in images:
+        for img in images:
+            try:
                 img_slice = copy.deepcopy(img[box_bounds[0]:box_bounds[3],
                                           box_bounds[1]:box_bounds[4],
                                           box_bounds[2]:box_bounds[5]])
@@ -50,9 +50,10 @@ def intensity_mapping_gmm(df, images, names):
                     n1, n2 = n2, n1
                 scaled = mean1 * n1 / (n1 + n2)
                 temp += [voro_mean, voro_std, mean1, mean2, std1, std2, n1, n2, scaled]
-        except:
-            temp += [np.nan]*9
+            except IndexError:
+                temp += [np.nan]*9
         out.append(temp)
+
     col_names = ['cell id']
     for name in names:
         col_names += ['intensity {} mean'.format(name),
