@@ -51,6 +51,26 @@ def plot_tsne(df,
                    linewidth=linewidth)
     return plt.gca()
 
+def plot_n_comp_gmm(s_score, bic_score, js_distance):
+    f = plt.figure(figsize=(15,5))
+    ax = plt.subplot(1, 3, 1)
+    ax.set_title('silhouette score')
+    plt.bar(x=range(2,10),
+                height=s_score,
+                )
+    ax = plt.subplot(1, 3, 2)
+    ax.set_title('bayesian information criterion ')
+    plt.bar(x=range(2,10),
+                height=bic_score,
+                )
+    ax = plt.subplot(1, 3, 3)
+    ax.set_title('Jensen-Shannon divergence')
+    plt.bar(x=range(2,10),
+                height=js_distance,
+                )
+    return f
+
+
 def plot_cluster_number_estimation(cn):
     sns.set(font_scale=1.5, style='whitegrid')
     palette = sns.color_palette(n_colors=3)

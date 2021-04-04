@@ -15,6 +15,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import tqdm
 import openTSNE as ot
+import ALoNe
 
 # TODO: comment all clustering functions
 # TODO: remove unnecessary clustering functions
@@ -26,7 +27,7 @@ import openTSNE as ot
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 
-def n_comp_gmm(X, n_comp=(2, 10), n_init=5):
+def n_comp_gmm(X, n_comp=(2, 10), n_init=5, plot=True):
     """
     Evaluate the performance of a Gaussian Mixture Model using different metrics.
 
@@ -61,6 +62,8 @@ def n_comp_gmm(X, n_comp=(2, 10), n_init=5):
             n_init=n_init,
         ).fit(X_q)
         js_distance.append(gmm_js(gmm_p, gmm_q, n_samples=X_p.shape[0]//2))
+    if plot:
+        plt.show(ALoNe.Plots.plot_n_comp_gmm(s_score, bic_score, js_distance))
     return s_score, js_distance, bic_score
 
 def gmm_js(gmm_p, gmm_q, n_samples=20000):
