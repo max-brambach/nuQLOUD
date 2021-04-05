@@ -46,7 +46,7 @@ def show_voro(df, c='gold', alpha=1):
 
 
 def show_categorical_features(df, label, palette='bright'):
-    labels = df[label].unique()
+    labels = np.sort(df[label].unique())
     p = vedo.Points(df[list('xyz')].to_numpy(), c='black', alpha=.5, r=1)
     ps = [p]
     colors = sns.palettes.color_palette(palette, n_colors=len(labels))
@@ -54,7 +54,6 @@ def show_categorical_features(df, label, palette='bright'):
         coords = df.loc[df[label] == l, list('xyz')].to_numpy()
         p = vedo.Points(coords, c=colors[i], alpha=1, r=3)
         ps.append(p)
-
     return ps
 
 

@@ -27,6 +27,19 @@ import ALoNe
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 
+
+def scale_data(df, features):
+    if not df['cell id'].is_unique:
+        df['cell id'] = df.index + 1
+    cids_all = df['cell id'].values
+    X = df[features].to_numpy()
+    X = StandardScaler().fit_transform(X)
+    columns = [f + ' scaled' for f in features]
+    columns += ['cell id']
+    df_scaled = pd.DataFrame(np.hstack([X, cids_all.reshape(-1,1)]), columns=columns)
+    return df.merge(df_scaled, on='cell id')
+
+
 def n_comp_gmm(X, n_comp=(2, 10), n_init=5, plot=True):
     """
     Evaluate the performance of a Gaussian Mixture Model using different metrics.
@@ -164,7 +177,7 @@ def tsne_sequential_embedding(df,
     remaining_embedding = initial_embedding.prepare_partial(
         remaining_df[features].to_numpy(),
         k=1,
-        perplexity=1/3,
+        perplexities=[1/3],
     )
     remaining_df['{} 1'.format(name)] = remaining_embedding[:, 0]
     remaining_df['{} 2'.format(name)] = remaining_embedding[:, 1]
