@@ -31,7 +31,7 @@ def all_features(df):
     dfs = []
     for sid in df['sample'].unique():
         sdf = df.loc[df['sample'] == sid].copy()
-        sdf = ALoNe.FeatureGeneration.nuclear_density(sdf)
+        sdf = ALoNe.FeatureGeneration.multi_scale_density(df)
         sdf = ALoNe.Voronoi.voronoi_restricted(sdf)
         sdf = ALoNe.FeatureGeneration.voronoi_features(sdf)
         dfs.append(sdf)
@@ -161,15 +161,53 @@ def nuclear_shape(df, disable_status=False):
     df['nucleus sphericity'] = spher_list
     return df
 
+def multi_scale_density(df,
+                        radii=None,  # has to be ordered lowest to highest
+                        shelled=True,
+                        column_name='shell',
+                        return_names=True):
+    """ Calculate point densities at different scales using a neighbour search on differetly sized spheres.
+
+    :param df: pandas.DataFrame, containing the coordinates of the points in columns lableled 'x', 'y', 'z'
+    :param radii: list, containing the radii of the spheres used for the density evaluation. !need to be oredered low->high!
+    :param segmented: bool, if True: densities are calculated in sphere shells of volume V=4/3*pi(r_current - r_previous)**3; if False: densities are calculated in full spheres (then smaller radius spheres are contained within larger radius spheres)
+    :param column_name: str, prefix of the columns that will be added to the df.
+    :param return_names: if True, function returns a list of the column names added to the df.
+    """
+    if radii is None:
+        radii = np.arange(10, 44, 5)
+    names = []  # this list will hold the names of the columns that will contain the densities at different radii.
+    tree = KDTree(
+        df[list('xyz')].values)  # we generate a kdtree from our points to speed up the radial neighbour search.
+    cumulative_numel = np.array([0] * len(df.index))
+    smallest_r = True
+    for r in tqdm.tqdm(radii):  # here we iterate over all radii; i.e. we generate the density for all different radii
+        volume = (4 / 3 * np.pi * r ** 3)
+        ball = tree.query_ball_tree(tree, r=r)
+        numel = []  # this list will hold the number of cells within radius r for each point
+        for i in range(len(ball)):
+            numel.append(len(ball[i]) - 1)
+        numel = np.array(numel)
+        if not shelled or smallest_r:
+            densities = numel / volume
+            smallest_r = False
+        else:
+            numel = numel - cumulative_numel
+            densities = numel / (volume - volume_previous)
+        volume_previous = volume
+        cumulative_numel += numel
+        name = '{} {}'.format(column_name, r)
+        df[name] = densities
+        names.append(name)
+    if return_names:
+        return names
 
 def voronoi_features(df):
-    df['boundary bool'] = (df['point type'] == 'boundary') * 1
     df = get_n_neighbours(df)
     df = voronoi_density(df)
     df = neighbourhood_feature_average(df, 'voronoi volume')
     df = neighbourhood_feature_average(df, 'voronoi sphericity')
     df = neighbourhood_feature_average(df, 'n neighbours')
-    df = neighbourhood_feature_average(df, 'boundary bool')
     df = neighbourhood_feature_average(df, 'centroid offset')
     return df
 
