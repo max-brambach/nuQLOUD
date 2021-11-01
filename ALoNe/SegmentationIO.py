@@ -81,7 +81,7 @@ def read_tgmm(xml_path, labels=None):
     if labels is not None:
         for key, val in labels.items():
             out[key] = val
-    out['cell id'] = generate_random_cell_id_prefix() + '_' + out['cell id TGMM'].astype(str)
+    out['cell id'] = out['cell id TGMM'] + 1
     return out
 
 def read_MaMuT(xml_path, disable_status=False):
