@@ -31,7 +31,7 @@ def all_features(df):
     dfs = []
     for sid in df['sample'].unique():
         sdf = df.loc[df['sample'] == sid].copy()
-        sdf = ALoNe.FeatureGeneration.multi_scale_density(df)
+        sdf = ALoNe.FeatureGeneration.multi_scale_density(sdf)
         sdf = ALoNe.Voronoi.voronoi_restricted(sdf)
         sdf = ALoNe.FeatureGeneration.voronoi_features(sdf)
         dfs.append(sdf)
