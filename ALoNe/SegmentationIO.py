@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import tqdm
 import glob
 import os
+import random
 
 
 def read_multiple_tgmm(path):
@@ -80,6 +81,7 @@ def read_tgmm(xml_path, labels=None):
     if labels is not None:
         for key, val in labels.items():
             out[key] = val
+    out['cell id'] = generate_random_cell_id_prefix() + '_' + out['cell id TGMM'].astype(str)
     return out
 
 def read_MaMuT(xml_path, disable_status=False):
@@ -220,3 +222,17 @@ def read_tgmm_from_folders(tgmm_path):
     df = pd.concat(l)
     df.reset_index(inplace=True, drop=True)
     return df
+
+
+def generate_random_cell_id_prefix(n=4):
+    """
+    Generate a random string of length n.
+
+    Used symbols are lower case letters, upper case letters and special characters.
+    Generated sting is unique in 1:10,000,000 for n=4; 57**n
+    :param n: int, length of string
+    :return: str, random string
+    """
+    np.random.seed()
+    prf = [chr(random.randint(65, 122)) for i in range(n)]
+    return ''.join(prf)
