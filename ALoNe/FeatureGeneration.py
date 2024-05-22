@@ -24,7 +24,7 @@ def all_features(df):
 
     Convenience function.
     Batch calculate nuclear density, the restricted voronoi diagram and the corresponding voronoi features for a df
-    containing 'x', 'y', 'z' coordinates and 'cell id's (<1).
+    containing 'x', 'y', 'z' coordinates and 'cell id's (>1).
     :param df: pd.DataFrame
     :return: pd.DataFrame
     """
