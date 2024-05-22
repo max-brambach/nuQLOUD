@@ -117,7 +117,7 @@ def make_fibonacci_lattice(number):
     return coords.astype(float)
 
 
-def adaptive_radial_restriction_3d(df, k=10, flat=False, flat_scale=.66):
+def adaptive_radial_restriction_3d(df, k=10):
     """
     Generate a set of points that will adaptively restrict a voronoi diagram relative to the local arrangement of the
     seed points.
@@ -149,18 +149,13 @@ def adaptive_radial_restriction_3d(df, k=10, flat=False, flat_scale=.66):
             df_neigh = df.loc[df['cell id'].isin(nid)]
             bound = df_neigh['boundary bool'].values.astype(bool)
             if bound.all():
-                if not flat:
-                    k_plus = 0
-                    while bound.all():
-                        kdtree_neighbours = tree.query(df.loc[df['cell id'] == cid, list('xyz')].values[0],
-                                                       k=k + k_plus)[1][1:]
-                        df_neigh = df.iloc[kdtree_neighbours]
-                        bound = df_neigh['boundary bool'].values.astype(bool)
-                        k_plus += 5
-                else:
-                    coords_neigh = df_neigh[list('xyz')].values
-                    coords_seed = df.loc[df['cell id'] == cid, list('xyz')].values
-                    avg_dist = np.mean(np.linalg.norm(coords_neigh - coords_seed, axis=1)) * flat_scale
+                k_plus = 0
+                while bound.all():
+                    kdtree_neighbours = tree.query(df.loc[df['cell id'] == cid, list('xyz')].values[0],
+                                                   k=k + k_plus)[1][1:]
+                    df_neigh = df.iloc[kdtree_neighbours]
+                    bound = df_neigh['boundary bool'].values.astype(bool)
+                    k_plus += 5
             V = df_neigh['voronoi volume'].values
             n_vert = df_neigh['vertex number'].values
             V = V[~bound].mean()
@@ -194,11 +189,11 @@ def find_boundary_cells(df):
     return df
 
 
-def voronoi_restricted(df, flat=False):
+def voronoi_restricted(df):
     voro1 = get_voronoi(df['cell id'].values, df[list('xyz')].values)
     df = pd.merge(df, voro1, on='cell id')
     df['boundary bool'] = (df['neighbour boundaries'] > 0) * 1
-    p_arr = adaptive_radial_restriction_3d(df, flat=flat)
+    p_arr = adaptive_radial_restriction_3d(df)
     df_arr = pd.DataFrame(p_arr, columns=list('xyz'))
     df_arr['restriction point bool'] = True
     df['restriction point bool'] = False
