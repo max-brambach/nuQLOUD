@@ -190,9 +190,22 @@ def find_boundary_cells(df):
 
 
 def voronoi_restricted(df):
+    """
+    Generate an adaptively restricted Voronoi diagram.
+
+    Conveniece fucntion.
+    This function generates an initial Voronoi diagram, identifies boundary cells, uses that information to generate auxilary points outside the boundary cells,
+    generates a secondary Voronoi diagram and does some bookkeepning with columns and boundary cells. Auxilary points are deleted before returning the df.
+    df has to contain the following columns:
+        * cell id: integer that uniquely identifies individual cells. Has to be > 0 for voro++ to work.
+        * x, y, z: Three columns containing the cell's coordinates.
+    """
+    # initial (radially restricted) voronoi diagram
     voro1 = get_voronoi(df['cell id'].values, df[list('xyz')].values)
     df = pd.merge(df, voro1, on='cell id')
+    # identify boundary cells
     df['boundary bool'] = (df['neighbour boundaries'] > 0) * 1
+    # set up adaptive radial restriction place auxilary points around boundary points
     p_arr = adaptive_radial_restriction_3d(df)
     df_arr = pd.DataFrame(p_arr, columns=list('xyz'))
     df_arr['restriction point bool'] = True
@@ -200,12 +213,15 @@ def voronoi_restricted(df):
     df_full = pd.concat([df, df_arr])
     df_full.reset_index(inplace=True, drop=True)
     df_full['cell id'] = df_full.index + 1
+    # just some houskeeping (remove unused columns)
     df_full.drop(['vertex number', 'edge number', 'edge distance', 'face number', 'voronoi surface area',
                   'voronoi volume', 'voronoi sphericity', 'x centroid', 'y centroid', 'z centroid', 'centroid offset',
                   'neigbour cell ids', 'neighbour boundaries', 'coordinates vertices', 'vertices per face'],
                  axis=1, inplace=True)
+    # 2nd Voronoi diagram (with the auxilary points
     voro_full = get_voronoi(df_full['cell id'].values, df_full[list('xyz')].values)
     df_full = pd.merge(df_full, voro_full, on='cell id')
+    # delete auxilary points
     df_full = find_boundary_cells(df_full)
     df_full = df_full.loc[df_full['restriction point bool'] != True]
     df_full.drop(['boundary bool', 'restriction point bool'], axis=1, inplace=True)
