@@ -203,6 +203,11 @@ def multi_scale_density(df,
         return names
 
 def voronoi_features(df):
+    """
+    Generate all Voronoi-diagram-based features.
+
+    Convenience function.
+    """
     df = get_n_neighbours(df)
     df = voronoi_density(df)
     df = neighbourhood_feature_average(df, 'voronoi volume')
@@ -214,6 +219,9 @@ def voronoi_features(df):
 
 
 def get_n_neighbours(df):
+    """
+    Identify the number of neighbours on the Delauny Graph for every point in the cloud.
+    """
     cids = list(df['cell id'].values)
     n_cids = df['neigbour cell ids'].values
     n_neigh = []
@@ -225,6 +233,9 @@ def get_n_neighbours(df):
 
 
 def voronoi_density(df):
+    """
+    Calculate the inverse average distance between each point and its nearest neighbours on the Delauny graph.
+    """
     voro_neighbours = df['neigbour cell ids'].to_list()
     idx = df['cell id'].to_dict()
     idx_rev = {v: k for k, v in idx.items()}
@@ -249,6 +260,9 @@ def voronoi_density(df):
 
 
 def neighbourhood_feature_average(df, feature_name):
+    """
+    Calculate the average feature value of a given feature for each point in its Dalauny-neighbourhood.
+    """
     voro_neighbours = df['neigbour cell ids'].to_list()
     idx = df['cell id'].to_dict()
     idx_rev = {v: k for k, v in idx.items()}
@@ -274,6 +288,9 @@ def neighbourhood_feature_average(df, feature_name):
     return df
 
 def scale_features(df, features):
+    """
+    Scale features such that they have 0 mean and unit variance.
+    """
     scaler = StandardScaler()
     X = df[features].to_numpy()
     X_scaled = scaler.fit_transform(X)
