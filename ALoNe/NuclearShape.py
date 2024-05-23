@@ -9,10 +9,10 @@ from sklearn.mixture import GaussianMixture
 import matplotlib.pyplot as plt
 
 
-# TODO: _old_ make a function that extracts the region around a nucleus from an image. this couls be done by next neighbour/2 distance
-# TODO: _old_ fit ellipsoid on data: http://www.juddzone.com/ALGORITHMS/least_squares_3D_ellipsoid.html, https://vtkplotter.embl.es/_modules/vtkplotter/analysis.html pca ellipsoid
-
-# TODO: scavenge the NuclearShape.py module for useful functions and delete
+"""
+Experimental code for the generateion of nuclear shape descriptors from either images or covariance matrices of Gaussian fits.
+Not essential for organisational feature generation.
+"""
 
 
 
