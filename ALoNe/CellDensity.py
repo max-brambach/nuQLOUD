@@ -3,9 +3,10 @@ import tqdm
 from scipy.stats import gaussian_kde
 from scipy.spatial import KDTree
 
-# TODO: refactor module name to 'local density' or something like that
-# TODO: test density gradient on data
-
+"""
+Experimental functions for the generation of nuclear density.
+Not used, but potentially useful:)
+"""
 
 def kernel_density_estimation(p_source, p_target=None):
     """
