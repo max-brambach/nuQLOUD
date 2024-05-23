@@ -4,11 +4,27 @@ import tqdm
 import vedo
 from sklearn.mixture import GaussianMixture
 import copy
-
 import raster_geometry as rg
+
+"""
+Functions for the mapping of intensity values from an image to a point cloud using different methods.
+Used in Brambach et al. Not essential for the generation of organisational features.
+"""
 
 
 def intensity_mapping_gmm(df, images, names):
+    """
+    Use a Gaussian Mixture Model to identify fluorescence noise and signal in individual Voronoi cells.
+
+    This function looks at all the intensity values inside individual Voronoi cells and performs a Gaussian noise estimation (i.e. an Otsu threshold) to
+    differentiate between background and signal.
+    Mean/SD1 are signal and Mead/SD2 are the background.
+    :param: df, pd.DataFrame: has to contain the columsn x, y, z, cell id, 
+    :param: images, list of np.arrays: contain the pixel intensity values 
+    :names: list of str: contain the names/labels corresponding to the images.
+
+    Returns a df with added columns for image, and intensities.
+    """    
     out = []
     cids = df['cell id'].unique()
 
@@ -70,6 +86,9 @@ def intensity_mapping_gmm(df, images, names):
 
 
 def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
+    """
+    Map intesity from image to point cloud using fixed radii per point.
+    """
     coords = np.round(coords).astype(int)
     count_error = 0
     if isinstance(radii, int):
@@ -97,6 +116,9 @@ def get_intensity_sphere(image, coords, radii, name, disable_statusbar=False):
     return intens_mean, intens_std
 
 def intensity(df, image, name):
+    """
+    Convenience function. Unused.
+    """
     coords = df[['x', 'y', 'z']].to_numpy()
     mean, std = get_intensity_sphere(image, coords, 2, name=name)
     cids = df.index.tolist()
