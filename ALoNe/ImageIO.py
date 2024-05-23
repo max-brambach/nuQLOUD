@@ -3,6 +3,10 @@ import h5py
 import numpy as np
 import os
 
+"""
+Some functions to read images.
+"""
+
 
 def get_number_from_filename(filename, key='TM', delimiter='_'):
     """
