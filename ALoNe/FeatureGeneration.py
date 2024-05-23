@@ -7,6 +7,9 @@ from sklearn.preprocessing import StandardScaler
 from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
 import ALoNe
 
+"""
+Functions to generate organisational features. Some require prior generation of a Vornonoi diagram (see ALoNe/Voronoi)
+"""
 
 def clean_up_columns(df):
     """
