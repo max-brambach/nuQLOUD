@@ -7,6 +7,9 @@ import glob
 import os
 import random
 
+"""
+Utility functions to read in segmentations from different sources (e.g. TGMM (McDole et al 2018)).
+"""
 
 def read_multiple_tgmm(path):
     """
