@@ -4,8 +4,10 @@ import tqdm
 from scipy.ndimage import map_coordinates
 from scipy import signal
 
-# TODO: finish ray based analysis
-# TODO: use ray based analysis as basis for membrane intensity estimate
+"""
+Experimental scripts for ray-tracing based intensity quantification. 
+Not essential for organisational features.
+"""
 
 
 def make_fibonacci_lattice(number):
