@@ -3,9 +3,11 @@ import seaborn as sns
 import numpy as np
 import pandas as pd
 
-# TODO: refactor to 'plot'
-# TODO: comment and clean up
-# TODO: us **kwargs to make plot functions more flexible
+"""
+Experimental plotting functions.
+Unused in the code for Brambach et. al.
+Not essential for the generation of organisational features.
+"""
 
 
 def num2grid(n):

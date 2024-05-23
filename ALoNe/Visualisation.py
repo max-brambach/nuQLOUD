@@ -4,6 +4,12 @@ import numpy as np
 import seaborn as sns
 
 def show_voro(df, c='gold', alpha=1):
+    """
+    Draw 3D voronoi diagram. 
+
+    Returns object that can be rendered using vedo.show().
+    Unfortuantely pretty slow for high number of points.
+    """
     sourcePoints = vtk.vtkPoints()
     sourcePolygons = vtk.vtkCellArray()
     cells, areas, volumes = [], [], []
@@ -46,6 +52,11 @@ def show_voro(df, c='gold', alpha=1):
 
 
 def show_categorical_features(df, label, palette='bright'):
+    """
+    Colour point cloud based on individual categorical features (i.e. labels).
+    `label` has to be a column in the df.
+    Returns object that can be rendered using vedo.show().
+    """
     labels = np.sort(df[label].unique())
     p = vedo.Points(df[list('xyz')].to_numpy(), c='black', alpha=.5, r=1)
     ps = [p]
@@ -58,6 +69,11 @@ def show_categorical_features(df, label, palette='bright'):
 
 
 def show_features(df, features, cmap='hot', r=5):
+    """
+    Colour point cloud based on numerical features (e.g. density).
+    `features` has to be a list of columns in the df.
+    Returns object that can be rendered using vedo.show().
+    """
     actors = []
     for f in features:
         pnts = []
