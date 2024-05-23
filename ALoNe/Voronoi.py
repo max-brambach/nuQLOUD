@@ -171,6 +171,11 @@ def adaptive_radial_restriction_3d(df, k=10):
 
 
 def find_boundary_cells(df):
+    """
+    Identify restriction points (auxilary points), boundary points and points inside the point cloud of an adaptively restricted voronoi diagram.
+
+    Used to clean up the Voronoi diagram after adaptive restriction. See `voronoi_restricted`.
+    """
     cids = df['cell id'].values
     df_idx = df.index
     dict_cid_idx = dict(zip(cids, df_idx))
