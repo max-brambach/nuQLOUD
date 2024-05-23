@@ -16,16 +16,15 @@ import matplotlib.pyplot as plt
 import tqdm
 import openTSNE as ot
 import ALoNe
-
-# TODO: comment all clustering functions
-# TODO: remove unnecessary clustering functions
-# TODO: clean up code
-# TODO: replace sklearn tsne by opentsne
-# TODO: add function to register a dataset to a reference
-# TODO: add function to calculate the distance of a point from the cluster center
-
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
+
+"""
+Functions to generate clusters on high dimensional, organisational data and evaluate their performance.
+Used in Brambach et al. Not essential for the generation of organisational features.
+"""
+
+
 
 
 def scale_data(df, features):
