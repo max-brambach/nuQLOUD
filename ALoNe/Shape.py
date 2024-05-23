@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 import tqdm
 
+"""
+Auxilary functions for the generation of shape descriptors.
+"""
+
 
 def normalise_anlges_to_pi(a):
     """
