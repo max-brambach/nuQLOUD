@@ -3,4 +3,3 @@ Repository containing tools to generate organisational features of point clouds.
 
 This framework currently requires a custom version of voro++ (can be found here https://github.com/max-brambach/voro) for the generation of the Voronoi diagram. This can be swapped out of course, but is currently not implemented.
 
-Note, currently nuQLOUD is named ALoNe in this repository for historical reasons. This will change with the next update.
