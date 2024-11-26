@@ -15,7 +15,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import tqdm
 import openTSNE as ot
-import ALoNe
+import nuqloud
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
 

@@ -4,11 +4,11 @@ import tqdm
 from scipy.stats import gaussian_kde
 from scipy.spatial import KDTree
 from sklearn.preprocessing import StandardScaler
-from ALoNe.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
-import ALoNe
+from nuqloud.Shape import get_main_vectors, eccentricity, aspect_ratio, ellipsoid_volume, ellipsoid_surface, sphericity
+import nuqloud
 
 """
-Functions to generate organisational features. Some require prior generation of a Vornonoi diagram (see ALoNe/Voronoi)
+Functions to generate organisational features. Some require prior generation of a Vornonoi diagram (see nuqloud/Voronoi)
 """
 
 def clean_up_columns(df):
