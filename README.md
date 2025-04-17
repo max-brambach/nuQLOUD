@@ -2,11 +2,12 @@
 
 **NUclear-based Quantification of Local Organisation via cellUlar Distributions (nuQLOUD)** is a computational framework designed to generate organizational features from point clouds. It utilizes Voronoi diagrams and kernel density estimations to characterize the arrangement of local point neighborhoods in an object-centered manner.
 
+This repository is part of the publication "In toto analysis of multicellular arrangement reduces embryonic tissue diversity to two archetypes that require specific cadherin expression" by Brambach et al.
+
 ## 🚀 Features
 
 - **Voronoi-Based Analysis:** Computes 3D Voronoi diagrams to assess spatial relationships between points.
 - **Kernel Density Estimation:** Estimates local densities to identify structural patterns.
-- **Customizable Parameters:** Allows users to adjust analysis parameters to fit specific datasets.
 
 ## 📦 Installation
 
@@ -50,6 +51,7 @@ A Jupyter notebook is included as a usage example:
     ```bash
     jupyter notebook
     ```
+    
 Then open and run: nuQLOUD_example_notebook.ipynb
 
 This notebook walks through how to:
