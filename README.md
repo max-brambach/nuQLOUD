@@ -53,7 +53,7 @@ Visualize the resulting structures
 
 ## 📂 Repository Overview
 
-    ```bash
+    ```
     nuQLOUD/
     ├── nuqcloud/                 # Source code
     ├── example_data/             # Example datasets
