@@ -21,7 +21,7 @@ This repository is part of the publication "In toto analysis of multicellular ar
    ```
    
 2. Create a conda environment (optional but recommended)
-We recommend creating a fresh environment with Python 3.7.9::
+We recommend creating a fresh environment with Python 3.7.9:
 
     ```bash
     conda create -n nuqcloud python=3.7.9
