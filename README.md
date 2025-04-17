@@ -4,11 +4,6 @@
 
 This repository is part of the publication "In toto analysis of multicellular arrangement reduces embryonic tissue diversity to two archetypes that require specific cadherin expression" by Brambach et al.
 
-## 🚀 Features
-
-- **Voronoi-Based Analysis:** Computes 3D Voronoi diagrams to assess spatial relationships between points.
-- **Kernel Density Estimation:** Estimates local densities to identify structural patterns.
-
 ## 📦 Installation
 
 ### Prerequisites
