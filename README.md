@@ -41,13 +41,9 @@ Make sure the voro++ binary is accessible from your PATH, or adjust the voro_pat
 
 ## 🧪 Usage
 
-A Jupyter notebook is included as a usage example:
-
-    ```bash
-    jupyter notebook
-    ```
+A Jupyter notebook is included as a usage example.
     
-Then open and run: nuQLOUD_example_notebook.ipynb
+Open and run: nuQLOUD_example_notebook.ipynb
 
 This notebook walks through how to:
 
