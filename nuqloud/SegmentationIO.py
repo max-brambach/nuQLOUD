@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import ALoNe
+import nuqloud
 import xml.etree.ElementTree as ET
 import tqdm
 import glob
@@ -24,7 +24,7 @@ def read_multiple_tgmm(path):
     dfs = []
     for seg_file in seg_files:
         name = os.path.basename(seg_file).split('.')[0]
-        sdf = ALoNe.SegmentationIO.read_tgmm(seg_file)
+        sdf = nuqloud.SegmentationIO.read_tgmm(seg_file)
         sdf['sample'] = name
         dfs.append(sdf)
     df = pd.concat(dfs)

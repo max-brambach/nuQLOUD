@@ -75,7 +75,7 @@ def n_comp_gmm(X, n_comp=(2, 10), n_init=5, plot=True):
         ).fit(X_q)
         js_distance.append(gmm_js(gmm_p, gmm_q, n_samples=X_p.shape[0]//2))
     if plot:
-        plt.show(ALoNe.Plots.plot_n_comp_gmm(s_score, bic_score, js_distance))
+        plt.show(nuqloud.Plots.plot_n_comp_gmm(s_score, bic_score, js_distance))
     return s_score, js_distance, bic_score
 
 def gmm_js(gmm_p, gmm_q, n_samples=20000):
