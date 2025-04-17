@@ -2,10 +2,7 @@ h5py==3.2.1
 k3d==2.9.7
 matplotlib==3.5.3
 numpy==1.20.3
-numpy==1.20.1
 openTSNE==0.5.1
-openTSNE==1.0.2
-pandas==1.2.3
 pandas==1.2.5
 raster_geometry==0.1.4.1
 scikit_learn==0.24.1
