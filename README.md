@@ -41,15 +41,11 @@ Make sure the voro++ binary is accessible from your PATH, or adjust the voro_pat
 
 ## 🧪 Usage
 
-A Jupyter notebook is included as a usage example.
-    
-Open and run: nuQLOUD_example_notebook.ipynb
+Two Jupyter notebooks are included as a usage examples.
 
-This notebook walks through how to:
+1. `nuQLOUD_example_synthetic_data.ipynb`: A lightweight introduction to feature generation with nuQLOUD using generated, synthetic data. A great place to  try out nuQLOUD quickly and on low-performance computers.
+2. `nuQLOUD_example_real_data.ipynb`: An example of nuQLOUD feature generation and clustering using real data from a 48 hpf zebrafish embryo. This notebook goes beyond the previous one and also illustrates how organisational motifs and archetypes are identified. Feature generation will be slow on low-performance computers.
 
-Load point cloud data
-Generate organizational features
-Visualize the resulting structures
 
 ## 📂 Repository Overview
 
