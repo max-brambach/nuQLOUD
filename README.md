@@ -39,6 +39,12 @@ We recommend creating a fresh environment with Python 3.7.9:
 This tool depends on a custom version of voro++. Follow the instructions in that repository to compile and install it.
 Make sure the voro++ binary is accessible from your PATH, or adjust the voro_path parameter in your script.
 
+3. Install nuQLOUD
+
+    ```bash
+    pip install nuQLOUD
+    ```
+
 ## 🧪 Usage
 
 Two Jupyter notebooks are included as a usage examples.
