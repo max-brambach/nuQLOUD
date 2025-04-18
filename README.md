@@ -59,7 +59,8 @@ Two Jupyter notebooks are included as a usage examples.
     nuQLOUD/
     ├── nuqcloud/                 # Source code
     ├── example_data/             # Example datasets
-    ├── nuQLOUD_example_notebook.ipynb
+    ├── nuQLOUD_example_real_data.ipynb
+    ├── nuQLOUD_example_synthetic_data.ipynb
     ├── LICENSE
     ├── requirements.txt
     ├── setup.py
